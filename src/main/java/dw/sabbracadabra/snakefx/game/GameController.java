@@ -39,28 +39,11 @@ public class GameController {
     public void run() {
         playfield.setFocusTraversable(true);
         playfield.setOnKeyPressed(keyEvent -> {
-            Snake.Trajectory snakeTrajectory = snake.getTrajectory();
             switch (keyEvent.getCode()) {
-                case W, UP -> {
-                    if (!(snakeTrajectory == Snake.Trajectory.UP || snakeTrajectory == Snake.Trajectory.DOWN)) {
-                        snake.setTrajectory(Snake.Trajectory.UP);
-                    }
-                }
-                case D, RIGHT -> {
-                    if (!(snakeTrajectory == Snake.Trajectory.LEFT || snakeTrajectory == Snake.Trajectory.RIGHT)) {
-                        snake.setTrajectory(Snake.Trajectory.RIGHT);
-                    }
-                }
-                case S, DOWN -> {
-                    if (!(snakeTrajectory == Snake.Trajectory.UP || snakeTrajectory == Snake.Trajectory.DOWN)) {
-                        snake.setTrajectory(Snake.Trajectory.DOWN);
-                    }
-                }
-                case A, LEFT -> {
-                    if (!(snakeTrajectory == Snake.Trajectory.LEFT || snakeTrajectory == Snake.Trajectory.RIGHT)) {
-                        snake.setTrajectory(Snake.Trajectory.LEFT);
-                    }
-                }
+                case W, UP -> snake.getTrajectoryBuffer().add(Snake.Trajectory.UP);
+                case D, RIGHT -> snake.getTrajectoryBuffer().add(Snake.Trajectory.RIGHT);
+                case S, DOWN -> snake.getTrajectoryBuffer().add(Snake.Trajectory.DOWN);
+                case A, LEFT -> snake.getTrajectoryBuffer().add(Snake.Trajectory.LEFT);
             }
         });
         createGameLoop();
@@ -78,6 +61,7 @@ public class GameController {
                 timeline.stop(); // Stop the timeline when the game is over
                 handleGameOver();
             }
+            snake.getTrajectoryBuffer().clear();
             checkEatingFood();
             playfield.updateView();
             stats.updateAllStats(timeDeltaInMs);

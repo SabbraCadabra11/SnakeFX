@@ -3,12 +3,12 @@ package dw.sabbracadabra.snakefx.game.model;
 
 import dw.sabbracadabra.snakefx.util.Config;
 
-import java.util.Deque;
-import java.util.LinkedList;
+import java.util.*;
 
 public class Snake implements Moveable {
     private final TileGrid tileGrid;
     private final Deque<Tile> body;
+    private final Queue<Trajectory> trajectoryBuffer;
     private Tile latestTail;
     private Trajectory trajectory;
 
@@ -18,6 +18,7 @@ public class Snake implements Moveable {
 
     public Snake(int startRow, int startColumn, TileGrid tileGrid) {
         body = new LinkedList<>();
+        trajectoryBuffer = new LinkedList<>();
         this.tileGrid = tileGrid;
         for (int i = 0; i < Config.SNAKE_STARTING_LENGTH; i++) {
             Tile tile = this.tileGrid.getTile(startRow, startColumn - i);
@@ -29,20 +30,56 @@ public class Snake implements Moveable {
         trajectory = Trajectory.RIGHT;
     }
 
-    public Deque<Tile> getBody() {
-        return body;
-    }
-
     public Tile getHead() {
         return body.peekFirst();
     }
 
-    public Trajectory getTrajectory() {
-        return trajectory;
+    private void setTrajectory() {
+        if (trajectoryBuffer.isEmpty()) {
+            return;
+        }
+        Trajectory restricted = getRestrictedTrajectory();
+        while (!trajectoryBuffer.isEmpty()) {
+            Trajectory next = trajectoryBuffer.poll();
+            if (next != restricted) {
+                switch (trajectory) {
+                    case UP, DOWN -> {
+                        if (next == Trajectory.LEFT || next == Trajectory.RIGHT) {
+                            trajectory = next;
+                        }
+                    }
+                    case LEFT, RIGHT -> {
+                        if (next == Trajectory.UP || next == Trajectory.DOWN) {
+                            trajectory = next;
+                        }
+                    }
+                }
+            }
+        }
     }
 
-    public void setTrajectory(Trajectory trajectory) {
-        this.trajectory = trajectory;
+    private Trajectory getRestrictedTrajectory() {
+        switch (trajectory) {
+            case UP -> {
+                return Trajectory.DOWN;
+            }
+            case DOWN -> {
+                return Trajectory.UP;
+            }
+            case LEFT -> {
+                return Trajectory.RIGHT;
+            }
+            case RIGHT -> {
+                return Trajectory.LEFT;
+            }
+            default -> {
+                return Trajectory.NONE;
+            }
+        }
+    }
+
+    public Queue<Trajectory> getTrajectoryBuffer() {
+        return trajectoryBuffer;
     }
 
     public void grow() {
@@ -51,6 +88,7 @@ public class Snake implements Moveable {
 
     @Override
     public boolean move() {
+        setTrajectory();
         Tile tail = body.peekLast();
         latestTail = tileGrid.getTile(tail.getRow(), tail.getColumn());
         switch (trajectory) {
