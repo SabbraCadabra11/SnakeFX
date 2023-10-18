@@ -32,7 +32,7 @@ public class GameController {
         statsBar = new StatsBar();
         gameView = new GameView(tileGrid, statsBar);
         playfield = gameView.getPlayfield();
-        snake = new Snake((Config.TILE_GRID_COLUMNS / 2) - 2, Config.TILE_GRID_ROWS / 2 - 2, tileGrid);
+        snake = new Snake(tileGrid);
         food = new Food(tileGrid);
     }
 

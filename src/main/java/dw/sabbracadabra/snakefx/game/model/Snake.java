@@ -16,6 +16,23 @@ public class Snake implements Moveable {
         UP, RIGHT, DOWN, LEFT, NONE
     }
 
+    public Snake(TileGrid tileGrid) {
+        body = new LinkedList<>();
+        trajectoryBuffer = new LinkedList<>();
+        this.tileGrid = tileGrid;
+
+        int headColumn = (Config.TILE_GRID_COLUMNS / 2) - 2;
+        int headRow = (Config.TILE_GRID_ROWS / 2) - 2;
+        for (int i = 0; i < Config.SNAKE_STARTING_LENGTH; i++) {
+            Tile tile = this.tileGrid.getTile(headRow, headColumn - i);
+            tile.setType(TileType.SNAKE);
+            body.add(tile);
+        }
+        Tile tail = body.peekLast();
+        latestTail = this.tileGrid.getTile(tail.getRow(), tail.getColumn());
+        trajectory = Trajectory.RIGHT;
+    }
+
     public Snake(int startRow, int startColumn, TileGrid tileGrid) {
         body = new LinkedList<>();
         trajectoryBuffer = new LinkedList<>();
