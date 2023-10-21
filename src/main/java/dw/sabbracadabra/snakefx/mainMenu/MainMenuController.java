@@ -2,18 +2,31 @@ package dw.sabbracadabra.snakefx.mainMenu;
 
 import dw.sabbracadabra.snakefx.game.GameController;
 import dw.sabbracadabra.snakefx.util.Config;
+import dw.sabbracadabra.snakefx.util.DatabaseUtil;
+import dw.sabbracadabra.snakefx.util.HighscoresManager;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.stage.Stage;
+
+import java.sql.Connection;
+import java.sql.SQLException;
 
 
 public class MainMenuController {
     private final Stage stage;
     private final MainMenuView view;
+    private final Connection connection;
+    private final HighscoresManager hsManager;
 
     public MainMenuController(Stage stage) {
         this.stage = stage;
         view = new MainMenuView();
+        try {
+            connection = DatabaseUtil.getConnection();
+            hsManager = new HighscoresManager(connection);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public void run() {
@@ -23,7 +36,7 @@ public class MainMenuController {
         Button exitButton = view.getExitButton();
 
         newGameButton.setOnAction(event -> {
-            GameController controller = new GameController(stage);
+            GameController controller = new GameController(stage, hsManager);
             controller.run();
         });
         highscoresButton.setOnAction(event -> handleHighscoresButton());

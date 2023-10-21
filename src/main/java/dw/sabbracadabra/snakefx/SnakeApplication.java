@@ -9,7 +9,6 @@ import java.sql.*;
 public class SnakeApplication extends Application {
     @Override
     public void start(Stage stage) throws SQLException {
-        Connection connection = DatabaseUtil.getConnection();
         MainMenuController mainMenuController = new MainMenuController(stage);
         mainMenuController.run();
         stage.setResizable(false);

@@ -9,6 +9,7 @@ import dw.sabbracadabra.snakefx.game.view.GameView;
 import dw.sabbracadabra.snakefx.game.view.Playfield;
 import dw.sabbracadabra.snakefx.game.view.StatsBar;
 import dw.sabbracadabra.snakefx.util.Config;
+import dw.sabbracadabra.snakefx.util.HighscoresManager;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.scene.Scene;
@@ -18,14 +19,15 @@ import javafx.util.Duration;
 public class GameController {
     private final Stage stage;
     private final TileGrid tileGrid;
+    private final GameStats stats;
     private final GameView gameView;
     private final Playfield playfield;
-    private final GameStats stats;
     private final StatsBar statsBar;
     private final Snake snake;
     private final Food food;
+    private final HighscoresManager hsManager;
 
-    public GameController(Stage stage) {
+    public GameController(Stage stage, HighscoresManager hsManager) {
         this.stage = stage;
         stats = new GameStats();
         tileGrid = new TileGrid();
@@ -34,6 +36,7 @@ public class GameController {
         playfield = gameView.getPlayfield();
         snake = new Snake(tileGrid);
         food = new Food(tileGrid);
+        this.hsManager = hsManager;
     }
 
     public void run() {
@@ -73,7 +76,9 @@ public class GameController {
     }
 
     private void handleGameOver() {
-        GameOverController gameOverController = new GameOverController(stage, stats);
+        hsManager.saveHighscore(stats);
+        hsManager.getHighscores().forEach(System.out::println);
+        GameOverController gameOverController = new GameOverController(stage, stats, hsManager);
         gameOverController.run();
     }
 

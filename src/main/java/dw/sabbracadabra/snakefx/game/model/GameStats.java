@@ -2,7 +2,7 @@ package dw.sabbracadabra.snakefx.game.model;
 
 import dw.sabbracadabra.snakefx.util.Config;
 
-public class GameStats {
+public class GameStats implements Comparable<GameStats> {
     private int snakeLength;
     private int score;
     private int timer;
@@ -27,6 +27,12 @@ public class GameStats {
     public int getSnakeLength() {
         return snakeLength;
     }
+    public int getScore() {
+        return score;
+    }
+    public int getTimer() {
+        return timer;
+    }
 
     public String getGameClock() {
         short seconds = (short) (timer / 1000); //the game won't ever be longer than short type
@@ -34,10 +40,6 @@ public class GameStats {
         seconds %= 60;
 
         return String.format("%02d:%02d", minutes, seconds);
-    }
-
-    public int getScore() {
-        return score;
     }
 
     public void handleAteFood() {
@@ -72,5 +74,14 @@ public class GameStats {
 
     private boolean areBonusPointsApplied() {
         return System.currentTimeMillis() - lastAteFoodTime <= BONUS_POINTS_DURATION;
+    }
+    @Override
+    public String toString() {
+        return String.format("score: %d, snakeLen: %d, timer: %s", getScore(), getSnakeLength(), getGameClock());
+    }
+
+    @Override
+    public int compareTo(GameStats o) {
+        return o.getScore() - this.getScore();
     }
 }
