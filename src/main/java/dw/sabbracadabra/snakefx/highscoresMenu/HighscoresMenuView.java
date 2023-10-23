@@ -4,14 +4,13 @@ import dw.sabbracadabra.snakefx.game.model.GameStats;
 import dw.sabbracadabra.snakefx.util.Config;
 import dw.sabbracadabra.snakefx.util.factories.ButtonFactory;
 import dw.sabbracadabra.snakefx.util.factories.LabelFactory;
+import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.geometry.VPos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
@@ -21,7 +20,7 @@ import java.util.List;
 public class HighscoresMenuView extends VBox {
     private Button nextPageBtn;
     private Button prevPageBtn;
-    private Button backToMenuBtn;
+    private final Button backToMenuBtn;
 
     public HighscoresMenuView(List<GameStats> highscores) {
         Font font = Config.DEFAULT_FONT;
@@ -31,12 +30,14 @@ public class HighscoresMenuView extends VBox {
         GridPane scoresTable = generateInitialScoresTable(highscores);
         HBox tableButtons = loadTableButtons();
 
-        backToMenuBtn = ButtonFactory.getButton("Back to main menu", FontWeight.BOLD, 36);
+        backToMenuBtn = ButtonFactory.getButton("Back to main menu", FontWeight.BOLD, 24);
+
+        Pane titleAndTableMargin = new Pane();
+        titleAndTableMargin.setMinHeight(Config.WINDOW_HEIGHT * 0.1);
 
         setBackground(Background.fill(Color.valueOf("#000000")));
         setAlignment(Pos.CENTER);
-        getChildren().addAll(titleLabel, scoresTable, tableButtons);
-
+        getChildren().addAll(titleLabel, titleAndTableMargin, scoresTable, tableButtons, backToMenuBtn);
     }
 
     private GridPane generateInitialScoresTable(List<GameStats> highscores) {
@@ -50,7 +51,7 @@ public class HighscoresMenuView extends VBox {
         table.setVgap(5);
 
         Font font = Config.DEFAULT_FONT;
-        font = Font.font(font.getFamily(), FontWeight.LIGHT, 20);
+        font = Font.font(font.getFamily(), FontWeight.NORMAL, 24);
         Label scoreHeader = LabelFactory.getLabel("Score", font, Color.LIGHTGREEN);
         Label lengthHeader = LabelFactory.getLabel("Snake Length", font, Color.LIGHTGREEN);
         Label timeHeader = LabelFactory.getLabel("Time", font, Color.LIGHTGREEN);
@@ -58,7 +59,10 @@ public class HighscoresMenuView extends VBox {
         table.add(scoreHeader, 1, 0);
         table.add(lengthHeader, 2, 0);
         table.add(timeHeader, 3, 0);
+        table.getChildren().forEach(label ->
+            GridPane.setMargin(label, new Insets(5, 20, 5, 20)));
 
+        font = Font.font(font.getFamily(), FontWeight.LIGHT, 20);
         for (int i = 1; i <= 10; i++) {
             if (i > highscores.size()) {
                 break;
@@ -75,20 +79,38 @@ public class HighscoresMenuView extends VBox {
             table.add(lengthLabel, 2, i);
             table.add(timeLabel, 3, i);
         }
+        table.getChildren().forEach(label -> {
+            GridPane.setHalignment(label, HPos.CENTER);
+            GridPane.setValignment(label, VPos.CENTER);
+        });
         table.setAlignment(Pos.CENTER);
         return table;
     }
 
     private HBox loadTableButtons() {
         nextPageBtn = ButtonFactory.getButton("Next page", FontWeight.BOLD, 20);
-        prevPageBtn = ButtonFactory.getButton("Previous page", FontWeight.BOLD, 20);
-        HBox tableButtons = new HBox(nextPageBtn, prevPageBtn);
+        prevPageBtn = ButtonFactory.getButton("Prev page", FontWeight.BOLD, 20);
+        HBox tableButtons = new HBox(prevPageBtn, nextPageBtn);
         tableButtons.setAlignment(Pos.CENTER);
         tableButtons.setPadding(new Insets(10));
 
         return tableButtons;
     }
+
+    public Button getNextPageBtn() {
+        return nextPageBtn;
+    }
+
+    public Button getPrevPageBtn() {
+        return prevPageBtn;
+    }
+
+    public Button getBackToMenuBtn() {
+        return backToMenuBtn;
+    }
 }
+
+
 
 
 /*
@@ -104,7 +126,7 @@ public class HighscoresMenuView extends VBox {
     10      8765             7              06:21
 
                             1/5
-            [Next page]              [Prev page]
+            [Prev page]              [Next page]
                     [Back to main menu]
  */
 

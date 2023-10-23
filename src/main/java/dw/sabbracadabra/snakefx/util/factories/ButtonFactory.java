@@ -15,7 +15,7 @@ public class ButtonFactory {
         Button button = new Button(caption);
         button.setFont(font);
         button.setTextFill(Color.LIGHTGREEN);
-        button.setBackground(Background.fill(Color.valueOf("#080808")));
+        button.setBackground(Background.fill(Color.valueOf("#141414")));
         button.setFocusTraversable(true);
 
         return button;

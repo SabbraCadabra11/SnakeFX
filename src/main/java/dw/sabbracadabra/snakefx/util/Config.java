@@ -14,5 +14,4 @@ public class Config {
     public static final double TILE_SIZE = (double) PLAYING_PANE_HEIGHT / TILE_GRID_ROWS;
     public static final int SNAKE_STARTING_LENGTH = 4;
     public static final Font DEFAULT_FONT = Font.font("MS Sans Seriff", 34);
-
 }

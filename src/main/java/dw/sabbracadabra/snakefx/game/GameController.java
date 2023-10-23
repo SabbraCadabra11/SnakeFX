@@ -58,7 +58,7 @@ public class GameController {
 
     private void createGameLoop() {
         Timeline timeline = new Timeline();
-        int timeDeltaInMs = 200;
+        int timeDeltaInMs = 175;
         KeyFrame keyFrame = new KeyFrame(Duration.millis(timeDeltaInMs), event -> {
             if (!snake.move()) {
                 timeline.stop(); // Stop the timeline when the game is over
@@ -77,7 +77,6 @@ public class GameController {
 
     private void handleGameOver() {
         hsManager.saveHighscore(stats);
-        hsManager.getHighscores().forEach(System.out::println);
         GameOverController gameOverController = new GameOverController(stage, stats, hsManager);
         gameOverController.run();
     }

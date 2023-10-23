@@ -37,17 +37,17 @@ public class Playfield extends Pane {
 
     private Paint getColorForTileType(TileType tile) {
         switch (tile) {
-            case EMPTY -> {
-                return Color.BLACK;
-            }
+//            case EMPTY -> {
+//                return Color.BLACK;
+//            }
             case SNAKE -> {
-                return Color.GREEN;
+                return Color.valueOf("#41e82e");
             }
             case FOOD -> {
-                return Color.RED;
+                return Color.valueOf("#ff0000");
             }
             default -> {
-                return Color.WHITE;
+                return Color.TRANSPARENT;
             }
         }
     }

@@ -8,7 +8,7 @@ public class GameStats implements Comparable<GameStats> {
     private int timer;
     private long lastAteFoodTime;
     private int bonusScoreMultiplier;
-    private final static int BONUS_POINTS_DURATION = 8000; // eight seconds
+    private final static int BONUS_POINTS_DURATION = 7000; // seven seconds
 
     public GameStats() {
         snakeLength = Config.SNAKE_STARTING_LENGTH;
