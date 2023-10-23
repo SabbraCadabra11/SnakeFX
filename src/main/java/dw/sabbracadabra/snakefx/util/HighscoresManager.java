@@ -21,7 +21,7 @@ public class HighscoresManager {
 
     private List<GameStats> loadHighscores(Connection connection) throws SQLException {
         List<GameStats> highscoresList = new ArrayList<>();
-        String query = "SELECT * FROM highscores ORDER BY score";
+        String query = "SELECT * FROM highscores ORDER BY score DESC";
         try (PreparedStatement statement = connection.prepareStatement(query);
              ResultSet rs = statement.executeQuery()) {
             while (rs.next()) {
