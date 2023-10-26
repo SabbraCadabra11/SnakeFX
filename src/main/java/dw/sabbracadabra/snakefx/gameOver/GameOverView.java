@@ -1,7 +1,6 @@
 package dw.sabbracadabra.snakefx.gameOver;
 
 import dw.sabbracadabra.snakefx.util.factories.ButtonFactory;
-import dw.sabbracadabra.snakefx.util.Config;
 import dw.sabbracadabra.snakefx.util.factories.LabelFactory;
 import dw.sabbracadabra.snakefx.game.model.GameStats;
 import javafx.geometry.Insets;
@@ -12,17 +11,13 @@ import javafx.scene.layout.Background;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 
 public class GameOverView extends VBox {
-    private static Font font = Config.DEFAULT_FONT;
     private static Button mainMenuButton;
     private static Button newGameButton;
     public GameOverView(GameStats thisGameStats, GameStats bestGameStats) {
-        font = Font.font(font.getFamily(), FontWeight.BOLD, 40);
-
-        Label titleLabel = LabelFactory.getLabel("Game over", font, Color.LIGHTGREEN);
+        Label titleLabel = LabelFactory.getLabel("Game over", Color.LIGHTGREEN, 40, FontWeight.BOLD);
         StatsColumn thisGameColumn = new StatsColumn("This game",
                                                     thisGameStats.getScore(),
                                                     thisGameStats.getSnakeLength(),
@@ -42,15 +37,17 @@ public class GameOverView extends VBox {
 
     private static class StatsColumn extends VBox {
         StatsColumn(String columnTitle, int score, int snakeLen, String duration) {
-            Font titleFont = Font.font(font.getFamily(), FontWeight.BOLD ,34);
-            Font statsFont = Font.font(font.getFamily(), 30);
-            Label title = LabelFactory.getLabel(columnTitle, titleFont, Color.LIGHTGREEN);
-            Label scoreLabel = LabelFactory.getLabel("Score: " + score, statsFont, Color.LIGHTGREEN);
-            Label snakeLenLabel = LabelFactory.getLabel("Snake length: " + snakeLen, statsFont, Color.LIGHTGREEN);
-            Label clockLabel = LabelFactory.getLabel("Game duration: " + duration, statsFont, Color.LIGHTGREEN);
+            Label title = LabelFactory.getLabel(columnTitle, Color.LIGHTGREEN, 34, FontWeight.BOLD);
+            Label scoreLabel = LabelFactory.getLabel(
+                    "Score: " + score, Color.LIGHTGREEN, 30, FontWeight.NORMAL);
+            Label snakeLenLabel = LabelFactory.getLabel(
+                    "Snake length: " + snakeLen, Color.LIGHTGREEN, 30, FontWeight.NORMAL);
+            Label clockLabel = LabelFactory.getLabel(
+                    "Game duration: " + duration, Color.LIGHTGREEN, 30, FontWeight.NORMAL);
             getChildren().addAll(title, scoreLabel, snakeLenLabel, clockLabel);
             setAlignment(Pos.CENTER_LEFT);
             setPadding(new Insets(30));
+            VBox.setMargin(title, new Insets(20));
         }
     }
 
@@ -60,6 +57,7 @@ public class GameOverView extends VBox {
             newGameButton = ButtonFactory.getButton("New game", FontWeight.BOLD, 30);
             setAlignment(Pos.CENTER);
             getChildren().addAll(newGameButton, mainMenuButton);
+            getChildren().forEach(button -> VBox.setMargin(button, new Insets(10)));
         }
     }
 

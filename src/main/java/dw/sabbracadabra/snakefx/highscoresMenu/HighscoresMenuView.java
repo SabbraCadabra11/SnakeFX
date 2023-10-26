@@ -12,7 +12,6 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
-import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 
 import java.util.List;
@@ -21,23 +20,31 @@ public class HighscoresMenuView extends VBox {
     private Button nextPageBtn;
     private Button prevPageBtn;
     private final Button backToMenuBtn;
+    private final GridPane scoresTable;
+    private final Label tablePageLabel;
+
 
     public HighscoresMenuView(List<GameStats> highscores) {
-        Font font = Config.DEFAULT_FONT;
-        font = Font.font(font.getFamily(), FontWeight.BOLD, 40);
-        Label titleLabel = LabelFactory.getLabel("Highscores", font, Color.LIGHTGREEN);
+        Label titleLabel = LabelFactory.getLabel("Highscores", Color.LIGHTGREEN, 40, FontWeight.BOLD);
 
-        GridPane scoresTable = generateInitialScoresTable(highscores);
+        scoresTable = generateInitialScoresTable(highscores);
+        tablePageLabel = LabelFactory.getLabel("", Color.LIGHTGREEN, 18, FontWeight.NORMAL);
+        tablePageLabel.setPadding(new Insets(15));
+        updateTablePageLabel(1, (int) Math.ceil((double) highscores.size() / 10));
+
         HBox tableButtons = loadTableButtons();
-
         backToMenuBtn = ButtonFactory.getButton("Back to main menu", FontWeight.BOLD, 24);
 
         Pane titleAndTableMargin = new Pane();
-        titleAndTableMargin.setMinHeight(Config.WINDOW_HEIGHT * 0.1);
+        titleAndTableMargin.setMinHeight(Config.WINDOW_HEIGHT * 0.05);
 
         setBackground(Background.fill(Color.valueOf("#000000")));
         setAlignment(Pos.CENTER);
-        getChildren().addAll(titleLabel, titleAndTableMargin, scoresTable, tableButtons, backToMenuBtn);
+        getChildren().addAll(titleLabel, titleAndTableMargin, scoresTable, tablePageLabel, tableButtons, backToMenuBtn);
+    }
+
+    void updateTablePageLabel(int currPage, int allPages) {
+        tablePageLabel.setText(currPage + "/" + allPages);
     }
 
     private GridPane generateInitialScoresTable(List<GameStats> highscores) {
@@ -50,11 +57,10 @@ public class HighscoresMenuView extends VBox {
         table.setHgap(5);
         table.setVgap(5);
 
-        Font font = Config.DEFAULT_FONT;
-        font = Font.font(font.getFamily(), FontWeight.NORMAL, 24);
-        Label scoreHeader = LabelFactory.getLabel("Score", font, Color.LIGHTGREEN);
-        Label lengthHeader = LabelFactory.getLabel("Snake Length", font, Color.LIGHTGREEN);
-        Label timeHeader = LabelFactory.getLabel("Time", font, Color.LIGHTGREEN);
+        Label scoreHeader = LabelFactory.getLabel("Score", Color.LIGHTGREEN, 24, FontWeight.NORMAL);
+        Label lengthHeader = LabelFactory.getLabel(
+                "Snake Length", Color.LIGHTGREEN, 24, FontWeight.NORMAL);
+        Label timeHeader = LabelFactory.getLabel("Time", Color.LIGHTGREEN, 24, FontWeight.NORMAL);
 
         table.add(scoreHeader, 1, 0);
         table.add(lengthHeader, 2, 0);
@@ -62,7 +68,6 @@ public class HighscoresMenuView extends VBox {
         table.getChildren().forEach(label ->
             GridPane.setMargin(label, new Insets(5, 20, 5, 20)));
 
-        font = Font.font(font.getFamily(), FontWeight.LIGHT, 20);
         for (int i = 1; i <= 10; i++) {
             if (i > highscores.size()) {
                 break;
@@ -70,10 +75,10 @@ public class HighscoresMenuView extends VBox {
             String score = String.valueOf(highscores.get(i - 1).getScore());
             String length = String.valueOf(highscores.get(i - 1).getSnakeLength());
             String time = highscores.get(i - 1).getGameClock();
-            Label ordinal = LabelFactory.getLabel(String.valueOf(i), font, Color.LIGHTGREEN);
-            Label scoreLabel = LabelFactory.getLabel(score, font, Color.LIGHTGREEN);
-            Label lengthLabel = LabelFactory.getLabel(length, font, Color.LIGHTGREEN);
-            Label timeLabel = LabelFactory.getLabel(time, font, Color.LIGHTGREEN);
+            Label ordinal = LabelFactory.getLabel(String.valueOf(i), Color.LIGHTGREEN, 24, FontWeight.LIGHT);
+            Label scoreLabel = LabelFactory.getLabel(score, Color.LIGHTGREEN, 24, FontWeight.LIGHT);
+            Label lengthLabel = LabelFactory.getLabel(length, Color.LIGHTGREEN, 24, FontWeight.LIGHT);
+            Label timeLabel = LabelFactory.getLabel(time, Color.LIGHTGREEN, 24, FontWeight.LIGHT);
             table.add(ordinal, 0, i);
             table.add(scoreLabel, 1, i);
             table.add(lengthLabel, 2, i);
@@ -92,8 +97,7 @@ public class HighscoresMenuView extends VBox {
         prevPageBtn = ButtonFactory.getButton("Prev page", FontWeight.BOLD, 20);
         HBox tableButtons = new HBox(prevPageBtn, nextPageBtn);
         tableButtons.setAlignment(Pos.CENTER);
-        tableButtons.setPadding(new Insets(10));
-
+        tableButtons.getChildren().forEach(button -> HBox.setMargin(button, new Insets(10)));
         return tableButtons;
     }
 
