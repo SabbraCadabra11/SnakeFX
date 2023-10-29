@@ -41,7 +41,7 @@ public class StatsBar extends HBox {
     private void configureLayout() {
         setMinHeight(Config.GAME_STATUS_BAR_HEIGHT);
         setMinWidth(Config.GAME_STATUS_BAR_WIDTH);
-        setSpacing(100);
+        setSpacing(70);
         setPadding(new Insets(10));
         setAlignment(Pos.CENTER);
         setBackground(Background.fill(Color.valueOf("#1a1a1a")));
