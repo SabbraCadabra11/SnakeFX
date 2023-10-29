@@ -13,6 +13,7 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.FontWeight;
+import javafx.scene.text.TextAlignment;
 
 import java.util.List;
 import java.util.Optional;
@@ -28,12 +29,11 @@ public class HighscoresMenuView extends VBox {
     public HighscoresMenuView(List<GameStats> pageScores) {
         Label titleLabel = LabelFactory.getLabel("Highscores", Color.LIGHTGREEN, 40, FontWeight.BOLD);
         backToMenuBtn = ButtonFactory.getButton("Back to main menu", FontWeight.BOLD, 24);
+        tablePageLabel = LabelFactory.getLabel("/0", Color.LIGHTGREEN, 18, FontWeight.NORMAL);
 
         if (!pageScores.isEmpty()) {
             scoresTable = generateScoresTable();
             updateScoresTable(pageScores, 1);
-            tablePageLabel = LabelFactory.getLabel(
-                    "/0", Color.LIGHTGREEN, 18, FontWeight.NORMAL);
             tablePageLabel.setPadding(new Insets(15));
             updateTablePageLabel(1, 1);
 
@@ -41,9 +41,10 @@ public class HighscoresMenuView extends VBox {
             getChildren().addAll(titleLabel, scoresTable, tablePageLabel, tableButtons, backToMenuBtn);
         } else {
             scoresTable = null;
-            tablePageLabel = null;
             Label noScoresLabel = LabelFactory.getLabel("No scores to show.\nPlay at least one game first.",
-                    Color.LIGHTGREEN,20, FontWeight.NORMAL);
+                    Color.LIGHTGREEN,30, FontWeight.NORMAL);
+            noScoresLabel.setTextAlignment(TextAlignment.CENTER);
+            noScoresLabel.setPadding(new Insets(0, 0, 30, 0));
             getChildren().addAll(titleLabel, noScoresLabel, backToMenuBtn);
         }
 
