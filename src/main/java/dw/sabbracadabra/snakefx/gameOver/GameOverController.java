@@ -12,12 +12,10 @@ import javafx.stage.Stage;
 public class GameOverController {
     private final Stage stage;
     private final GameOverView view;
-    private final HighscoresManager hsManager;
 
     public GameOverController(Stage stage, GameStats currGameStats, HighscoresManager hsManager) {
         this.stage = stage;
-        this.hsManager = hsManager;
-        GameStats bestGameStats = hsManager.getBestHighscore();
+        GameStats bestGameStats = hsManager.getBestHighscore().orElse(currGameStats);
         view = new GameOverView(currGameStats, bestGameStats);
         view.setFocusTraversable(true);
 

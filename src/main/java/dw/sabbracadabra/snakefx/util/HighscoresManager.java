@@ -9,10 +9,11 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 public class HighscoresManager {
-    private List<GameStats> highscores;
-    private Connection connection;
+    private final List<GameStats> highscores;
+    private final Connection connection;
 
     public HighscoresManager(Connection connection) throws SQLException {
         this.connection = connection;
@@ -37,15 +38,8 @@ public class HighscoresManager {
         return highscores;
     }
 
-    public List<GameStats> getTopHighscores(int count) {
-        if (count >= highscores.size()) {
-            return highscores;
-        }
-        return highscores.subList(0, count - 1);
-    }
-
-    public GameStats getBestHighscore() {
-        return highscores.get(0);
+    public Optional<GameStats> getBestHighscore() {
+        return Optional.ofNullable(highscores.get(0));
     }
 
     public void saveHighscore(GameStats stats) {

@@ -15,6 +15,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.FontWeight;
 
 import java.util.List;
+import java.util.Optional;
 
 public class HighscoresMenuView extends VBox {
     private Button nextPageBtn;
@@ -24,34 +25,47 @@ public class HighscoresMenuView extends VBox {
     private final Label tablePageLabel;
 
 
-    public HighscoresMenuView(List<GameStats> highscores) {
+    public HighscoresMenuView(List<GameStats> pageScores) {
         Label titleLabel = LabelFactory.getLabel("Highscores", Color.LIGHTGREEN, 40, FontWeight.BOLD);
-
-        scoresTable = generateInitialScoresTable(highscores);
-        tablePageLabel = LabelFactory.getLabel("", Color.LIGHTGREEN, 18, FontWeight.NORMAL);
-        tablePageLabel.setPadding(new Insets(15));
-        updateTablePageLabel(1, (int) Math.ceil((double) highscores.size() / 10));
-
-        HBox tableButtons = loadTableButtons();
         backToMenuBtn = ButtonFactory.getButton("Back to main menu", FontWeight.BOLD, 24);
 
-        Pane titleAndTableMargin = new Pane();
-        titleAndTableMargin.setMinHeight(Config.WINDOW_HEIGHT * 0.05);
+        if (!pageScores.isEmpty()) {
+            scoresTable = generateScoresTable();
+            updateScoresTable(pageScores, 1);
+            tablePageLabel = LabelFactory.getLabel(
+                    "/0", Color.LIGHTGREEN, 18, FontWeight.NORMAL);
+            tablePageLabel.setPadding(new Insets(15));
+            updateTablePageLabel(1, 1);
 
-        setBackground(Background.fill(Color.valueOf("#000000")));
-        setAlignment(Pos.CENTER);
-        getChildren().addAll(titleLabel, titleAndTableMargin, scoresTable, tablePageLabel, tableButtons, backToMenuBtn);
-    }
-
-    void updateTablePageLabel(int currPage, int allPages) {
-        tablePageLabel.setText(currPage + "/" + allPages);
-    }
-
-    private GridPane generateInitialScoresTable(List<GameStats> highscores) {
-        if (highscores.isEmpty()) {
-            return new GridPane();
+            HBox tableButtons = loadTableButtons();
+            getChildren().addAll(titleLabel, scoresTable, tablePageLabel, tableButtons, backToMenuBtn);
+        } else {
+            scoresTable = null;
+            tablePageLabel = null;
+            Label noScoresLabel = LabelFactory.getLabel("No scores to show.\nPlay at least one game first.",
+                    Color.LIGHTGREEN,20, FontWeight.NORMAL);
+            getChildren().addAll(titleLabel, noScoresLabel, backToMenuBtn);
         }
 
+        setBackground(Background.fill(Color.BLACK));
+        setAlignment(Pos.CENTER);
+        double topTitleMargin = Config.WINDOW_HEIGHT * 0.05;
+        double bottomTitleMargin = Config.WINDOW_HEIGHT * 0.1;
+        double bottomMargin = Config.WINDOW_HEIGHT * 0.1;
+        VBox.setMargin(titleLabel, new Insets(topTitleMargin, 20, bottomTitleMargin, 20));
+        VBox.setMargin(backToMenuBtn, new Insets(10, 0, bottomMargin, 0));
+    }
+
+    private HBox loadTableButtons() {
+        nextPageBtn = ButtonFactory.getButton("Next page", FontWeight.BOLD, 20);
+        prevPageBtn = ButtonFactory.getButton("Prev page", FontWeight.BOLD, 20);
+        HBox tableButtons = new HBox(prevPageBtn, nextPageBtn);
+        tableButtons.setAlignment(Pos.CENTER);
+        tableButtons.getChildren().forEach(button -> HBox.setMargin(button, new Insets(10)));
+        return tableButtons;
+    }
+
+    private GridPane generateScoresTable() {
         GridPane table = new GridPane();
         table.setAlignment(Pos.CENTER);
         table.setHgap(5);
@@ -66,47 +80,47 @@ public class HighscoresMenuView extends VBox {
         table.add(lengthHeader, 2, 0);
         table.add(timeHeader, 3, 0);
         table.getChildren().forEach(label ->
-            GridPane.setMargin(label, new Insets(5, 20, 5, 20)));
+                GridPane.setMargin(label, new Insets(5, 20, 5, 20)));
 
-        for (int i = 1; i <= 10; i++) {
-            if (i > highscores.size()) {
-                break;
-            }
-            String score = String.valueOf(highscores.get(i - 1).getScore());
-            String length = String.valueOf(highscores.get(i - 1).getSnakeLength());
-            String time = highscores.get(i - 1).getGameClock();
-            Label ordinal = LabelFactory.getLabel(String.valueOf(i), Color.LIGHTGREEN, 24, FontWeight.LIGHT);
-            Label scoreLabel = LabelFactory.getLabel(score, Color.LIGHTGREEN, 24, FontWeight.LIGHT);
-            Label lengthLabel = LabelFactory.getLabel(length, Color.LIGHTGREEN, 24, FontWeight.LIGHT);
-            Label timeLabel = LabelFactory.getLabel(time, Color.LIGHTGREEN, 24, FontWeight.LIGHT);
-            table.add(ordinal, 0, i);
-            table.add(scoreLabel, 1, i);
-            table.add(lengthLabel, 2, i);
-            table.add(timeLabel, 3, i);
-        }
-        table.getChildren().forEach(label -> {
-            GridPane.setHalignment(label, HPos.CENTER);
-            GridPane.setValignment(label, VPos.CENTER);
-        });
-        table.setAlignment(Pos.CENTER);
         return table;
     }
 
-    private HBox loadTableButtons() {
-        nextPageBtn = ButtonFactory.getButton("Next page", FontWeight.BOLD, 20);
-        prevPageBtn = ButtonFactory.getButton("Prev page", FontWeight.BOLD, 20);
-        HBox tableButtons = new HBox(prevPageBtn, nextPageBtn);
-        tableButtons.setAlignment(Pos.CENTER);
-        tableButtons.getChildren().forEach(button -> HBox.setMargin(button, new Insets(10)));
-        return tableButtons;
+    void updateTablePageLabel(int currPage, int allPages) {
+        tablePageLabel.setText(currPage + "/" + allPages);
     }
 
-    public Button getNextPageBtn() {
-        return nextPageBtn;
+    void updateScoresTable(List<GameStats> newPageScores, int pageNumber) {
+        if (scoresTable.getRowCount() > 1) {
+            scoresTable.getChildren().removeIf(label -> GridPane.getRowIndex(label) > 0);
+        }
+        for (int i = 0; i < newPageScores.size(); i++) {
+            String score = String.valueOf(newPageScores.get(i).getScore());
+            String length = String.valueOf(newPageScores.get(i).getSnakeLength());
+            String time = newPageScores.get(i).getGameClock();
+            int ordinal = (i + 1) + (pageNumber - 1) * 10;
+            Label ordinalLabel = LabelFactory.getLabel(String.valueOf(ordinal),
+                                Color.LIGHTGREEN, 24, FontWeight.LIGHT);
+            Label scoreLabel = LabelFactory.getLabel(score, Color.LIGHTGREEN, 24, FontWeight.LIGHT);
+            Label lengthLabel = LabelFactory.getLabel(length, Color.LIGHTGREEN, 24, FontWeight.LIGHT);
+            Label timeLabel = LabelFactory.getLabel(time, Color.LIGHTGREEN, 24, FontWeight.LIGHT);
+            scoresTable.add(ordinalLabel, 0, i + 1);
+            scoresTable.add(scoreLabel, 1, i + 1);
+            scoresTable.add(lengthLabel, 2, i + 1);
+            scoresTable.add(timeLabel, 3, i + 1);
+        }
+        scoresTable.getChildren().forEach(label -> {
+            GridPane.setHalignment(label, HPos.CENTER);
+            GridPane.setValignment(label, VPos.CENTER);
+        });
+        scoresTable.setAlignment(Pos.CENTER);
     }
 
-    public Button getPrevPageBtn() {
-        return prevPageBtn;
+    public Optional<Button> getNextPageBtn() {
+        return Optional.ofNullable(nextPageBtn);
+    }
+
+    public Optional<Button> getPrevPageBtn() {
+        return Optional.ofNullable(prevPageBtn);
     }
 
     public Button getBackToMenuBtn() {
